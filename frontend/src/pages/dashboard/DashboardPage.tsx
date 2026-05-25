@@ -12,12 +12,12 @@ export default function DashboardPage() {
 
   const { data: timetable } = useQuery({
     queryKey: ["my-timetable"],
-    queryFn: () => getMyTimetable().then((r) => r.data),
+    queryFn: () => getMyTimetable(),
   });
 
   const { data: assignments } = useQuery({
     queryKey: ["assignments"],
-    queryFn: () => getAssignments().then((r) => r.data),
+    queryFn: () => getAssignments(),
   });
 
   const todayEntries = timetable?.filter((e) => e.day === today) ?? [];

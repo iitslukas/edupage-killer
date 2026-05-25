@@ -24,7 +24,7 @@ describe("assignments api", () => {
   it("getAssignments calls GET /assignments/", async () => {
     mock.onGet("/assignments/").reply(200, []);
     const res = await getAssignments();
-    expect(res.data).toEqual([]);
+    expect(res).toEqual([]);
   });
 
   it("getAssignments passes optional params", async () => {

@@ -25,7 +25,7 @@ const baseNote: Note = {
 
 describe("NotesPage", () => {
   beforeEach(() => {
-    vi.mocked(getNotes).mockResolvedValue({ data: [baseNote] } as any);
+    vi.mocked(getNotes).mockResolvedValue([baseNote]);
     vi.mocked(createNote).mockResolvedValue({ data: baseNote } as any);
     vi.mocked(deleteNote).mockResolvedValue({ data: undefined } as any);
   });
@@ -41,7 +41,7 @@ describe("NotesPage", () => {
   });
 
   it("shows empty state when no notes exist", async () => {
-    vi.mocked(getNotes).mockResolvedValue({ data: [] } as any);
+    vi.mocked(getNotes).mockResolvedValue([]);
     renderWithQuery(<NotesPage />);
     await waitFor(() =>
       expect(screen.getByText("No notes yet. Create your first note!")).toBeInTheDocument()
@@ -55,7 +55,7 @@ describe("NotesPage", () => {
   });
 
   it("shows 'Untitled note' for notes with no title", async () => {
-    vi.mocked(getNotes).mockResolvedValue({ data: [{ ...baseNote, title: "" }] } as any);
+    vi.mocked(getNotes).mockResolvedValue([{ ...baseNote, title: "" }]);
     renderWithQuery(<NotesPage />);
     await waitFor(() => expect(screen.getByText("Untitled note")).toBeInTheDocument());
   });
@@ -134,9 +134,7 @@ describe("NotesPage", () => {
   });
 
   it("renders comma-separated tags as individual chips", async () => {
-    vi.mocked(getNotes).mockResolvedValue({
-      data: [{ ...baseNote, tags: "math, science, history" }],
-    } as any);
+    vi.mocked(getNotes).mockResolvedValue([{ ...baseNote, tags: "math, science, history" }]);
     renderWithQuery(<NotesPage />);
     await waitFor(() => expect(screen.getByText("math")).toBeInTheDocument());
     expect(screen.getByText("science")).toBeInTheDocument();

@@ -17,7 +17,7 @@ describe("notes api", () => {
   it("getNotes calls GET /notes/", async () => {
     mock.onGet("/notes/").reply(200, []);
     const res = await getNotes();
-    expect(res.data).toEqual([]);
+    expect(res).toEqual([]);
   });
 
   it("getNotes passes optional params", async () => {

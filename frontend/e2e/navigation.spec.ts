@@ -5,7 +5,7 @@ test.describe("navigation", () => {
   test.beforeEach(async ({ page }) => {
     await setupAuth(page);
     // Silence all data fetches so tests can focus on navigation
-    await page.route(/\/(timetable|assignments|notes|attendance|materials|chat|accounts)\//, (route) =>
+    await page.route(/\/api\/(timetable|assignments|notes|attendance|materials|chat|accounts)\//, (route) =>
       route.fulfill({ json: [] }),
     );
   });
@@ -52,7 +52,7 @@ test.describe("navigation", () => {
   });
 
   test("dashboard shows upcoming assignments from API", async ({ page }) => {
-    await page.route(/\/assignments\//, (route) =>
+    await page.route(/\/api\/assignments\//, (route) =>
       route.fulfill({ json: [MOCK_ASSIGNMENT] }),
     );
     await page.goto("/dashboard");
@@ -60,7 +60,7 @@ test.describe("navigation", () => {
   });
 
   test("dashboard shows 'All caught up!' when no upcoming assignments", async ({ page }) => {
-    await page.route(/\/assignments\//, (route) => route.fulfill({ json: [] }));
+    await page.route(/\/api\/assignments\//, (route) => route.fulfill({ json: [] }));
     await page.goto("/dashboard");
     await expect(page.getByText("All caught up!")).toBeVisible();
   });

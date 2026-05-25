@@ -77,7 +77,7 @@ export async function setupAuth(page: Page) {
 
 /** Silence all API calls that aren't explicitly mocked in a test. */
 export async function catchAllApi(page: Page) {
-  await page.route(/\/(timetable|attendance|materials|chat|assignments|notes|accounts)\//, (route) => {
+  await page.route(/\/api\/(timetable|attendance|materials|chat|assignments|notes|accounts)\//, (route) => {
     if (!route.request().isNavigationRequest()) {
       route.fulfill({ json: [] });
     } else {

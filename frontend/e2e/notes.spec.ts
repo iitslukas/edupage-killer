@@ -7,13 +7,13 @@ test.describe("notes", () => {
   });
 
   test("shows empty state when no notes returned", async ({ page }) => {
-    await page.route(/\/notes\//, (route) => route.fulfill({ json: [] }));
+    await page.route(/\/api\/notes\//, (route) => route.fulfill({ json: [] }));
     await page.goto("/notes");
     await expect(page.getByText("No notes yet. Create your first note!")).toBeVisible();
   });
 
   test("renders notes returned by the API", async ({ page }) => {
-    await page.route(/\/notes\//, (route) => route.fulfill({ json: [MOCK_NOTE] }));
+    await page.route(/\/api\/notes\//, (route) => route.fulfill({ json: [MOCK_NOTE] }));
     await page.goto("/notes");
     await expect(page.getByText("Study notes")).toBeVisible();
     await expect(page.getByText("Important stuff to remember")).toBeVisible();
@@ -21,7 +21,7 @@ test.describe("notes", () => {
   });
 
   test("shows 'Untitled note' when note has no title", async ({ page }) => {
-    await page.route(/\/notes\//, (route) =>
+    await page.route(/\/api\/notes\//, (route) =>
       route.fulfill({ json: [{ ...MOCK_NOTE, title: "" }] }),
     );
     await page.goto("/notes");
@@ -29,7 +29,7 @@ test.describe("notes", () => {
   });
 
   test("New Note button opens the creation form", async ({ page }) => {
-    await page.route(/\/notes\//, (route) => route.fulfill({ json: [] }));
+    await page.route(/\/api\/notes\//, (route) => route.fulfill({ json: [] }));
     await page.goto("/notes");
     await page.getByRole("button", { name: /new note/i }).click();
     await expect(page.getByPlaceholder("Write your note…")).toBeVisible();
@@ -37,14 +37,14 @@ test.describe("notes", () => {
   });
 
   test("Save button is disabled with empty content", async ({ page }) => {
-    await page.route(/\/notes\//, (route) => route.fulfill({ json: [] }));
+    await page.route(/\/api\/notes\//, (route) => route.fulfill({ json: [] }));
     await page.goto("/notes");
     await page.getByRole("button", { name: /new note/i }).click();
     await expect(page.getByRole("button", { name: /save/i })).toBeDisabled();
   });
 
   test("Save button enables once content is typed", async ({ page }) => {
-    await page.route(/\/notes\//, (route) => route.fulfill({ json: [] }));
+    await page.route(/\/api\/notes\//, (route) => route.fulfill({ json: [] }));
     await page.goto("/notes");
     await page.getByRole("button", { name: /new note/i }).click();
     await page.getByPlaceholder("Write your note…").fill("Some content");
@@ -54,7 +54,7 @@ test.describe("notes", () => {
   test("submitting the form sends a POST and closes the form", async ({ page }) => {
     let capturedBody: Record<string, unknown> | null = null;
 
-    await page.route(/\/notes\//, async (route) => {
+    await page.route(/\/api\/notes\//, async (route) => {
       if (route.request().method() === "POST") {
         capturedBody = JSON.parse(route.request().postData() ?? "{}");
         await route.fulfill({ json: { ...MOCK_NOTE, ...capturedBody } });
@@ -83,7 +83,7 @@ test.describe("notes", () => {
   test("Cancel button closes the form without posting", async ({ page }) => {
     let postCalled = false;
 
-    await page.route(/\/notes\//, async (route) => {
+    await page.route(/\/api\/notes\//, async (route) => {
       if (route.request().method() === "POST") {
         postCalled = true;
         await route.fulfill({ json: {} });
@@ -102,7 +102,7 @@ test.describe("notes", () => {
   });
 
   test("delete button sends a DELETE request", async ({ page }) => {
-    await page.route(/\/notes\//, async (route) => {
+    await page.route(/\/api\/notes\//, async (route) => {
       const method = route.request().method();
       if (method === "DELETE") {
         await route.fulfill({ status: 204, body: "" });

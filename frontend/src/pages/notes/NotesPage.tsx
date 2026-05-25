@@ -22,7 +22,7 @@ export default function NotesPage() {
 
   const { data: notes, isLoading } = useQuery({
     queryKey: ["notes"],
-    queryFn: () => getNotes().then((r) => r.data),
+    queryFn: () => getNotes(),
   });
 
   const createMut = useMutation({

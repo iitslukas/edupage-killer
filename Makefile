@@ -1,4 +1,4 @@
-.PHONY: help install dev stop logs migrate makemigrations createsuperuser shell lint lint-fix format typecheck test test-e2e build clean sync-edupage
+.PHONY: help install dev stop logs migrate migrate-local makemigrations makemigrations-local createsuperuser shell lint lint-fix format typecheck test test-e2e build clean sync-edupage db be fe
 
 BACKEND_DIR := backend
 FRONTEND_DIR := frontend
@@ -8,9 +8,13 @@ help:
 	@echo ""
 	@echo "  install           Install all dependencies"
 	@echo "  dev               Start all services in Docker"
+	@echo "  db                Start postgres + redis in Docker (detached, for local fe/be)"
+	@echo "  be                Run backend locally (host) on :8000  (needs: make db)"
+	@echo "  fe                Run frontend locally (host) on :5173"
 	@echo "  stop              Stop all services"
 	@echo "  logs              Tail Docker logs"
-	@echo "  migrate           Run Django migrations"
+	@echo "  migrate           Run Django migrations (inside docker)"
+	@echo "  migrate-local     Run Django migrations + seed dev users (host, against make db)"
 	@echo "  makemigrations    Create Django migrations"
 	@echo "  createsuperuser   Create Django admin user"
 	@echo "  shell             Open Django shell"
@@ -23,6 +27,9 @@ help:
 	@echo "  build             Build production images"
 	@echo "  clean             Remove containers and volumes"
 	@echo "  sync-edupage      Trigger EduPage sync"
+	@echo ""
+	@echo "Local (host) flow:  make install && make db && make migrate-local"
+	@echo "                    then 'make be' in one terminal, 'make fe' in another."
 
 install:
 	cd $(BACKEND_DIR) && uv sync
@@ -50,6 +57,10 @@ makemigrations:
 
 makemigrations-local:
 	cd $(BACKEND_DIR) && uv run python manage.py makemigrations
+
+migrate-local:
+	cd $(BACKEND_DIR) && uv run python manage.py migrate
+	cd $(BACKEND_DIR) && uv run python manage.py seed_dev
 
 createsuperuser:
 	docker compose exec backend uv run python manage.py createsuperuser
@@ -92,8 +103,12 @@ clean:
 sync-edupage:
 	docker compose exec backend uv run python manage.py sync_edupage
 
-backend-local:
+be:
 	cd $(BACKEND_DIR) && uv run python manage.py runserver 0.0.0.0:8000
 
-frontend-local:
+fe:
 	cd $(FRONTEND_DIR) && pnpm run dev
+
+db:
+	cp -n .env.example .env 2>/dev/null || true
+	docker compose up -d db redis

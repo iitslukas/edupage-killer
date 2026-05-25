@@ -7,11 +7,11 @@ const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 export default function TimetablePage() {
   const { data: entries, isLoading } = useQuery({
     queryKey: ["my-timetable"],
-    queryFn: () => getMyTimetable().then((r) => r.data),
+    queryFn: () => getMyTimetable(),
   });
   const { data: periods } = useQuery({
     queryKey: ["periods"],
-    queryFn: () => getPeriods().then((r) => r.data),
+    queryFn: () => getPeriods(),
   });
 
   if (isLoading) return <div className="text-gray-500">Loading timetable…</div>;

@@ -13,7 +13,7 @@ const STATUS_STYLES: Record<string, string> = {
 export default function AttendancePage() {
   const { data: records, isLoading } = useQuery({
     queryKey: ["my-attendance"],
-    queryFn: () => getMyAttendance().then((r) => r.data),
+    queryFn: () => getMyAttendance(),
   });
 
   const stats = {

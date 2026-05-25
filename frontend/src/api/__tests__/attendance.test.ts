@@ -17,7 +17,7 @@ describe("attendance api", () => {
   it("getMyAttendance calls GET /attendance/my/", async () => {
     mock.onGet("/attendance/my/").reply(200, []);
     const res = await getMyAttendance();
-    expect(res.data).toEqual([]);
+    expect(res).toEqual([]);
   });
 
   it("getAttendance calls GET /attendance/ with params", async () => {

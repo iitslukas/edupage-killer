@@ -39,8 +39,8 @@ const baseGrade: Grade = {
 
 describe("AssignmentsPage", () => {
   beforeEach(() => {
-    vi.mocked(getAssignments).mockResolvedValue({ data: [baseAssignment] } as any);
-    vi.mocked(getGrades).mockResolvedValue({ data: [baseGrade] } as any);
+    vi.mocked(getAssignments).mockResolvedValue([baseAssignment]);
+    vi.mocked(getGrades).mockResolvedValue([baseGrade]);
   });
 
   afterEach(() => {
@@ -60,7 +60,7 @@ describe("AssignmentsPage", () => {
   });
 
   it("shows empty state when no assignments exist", async () => {
-    vi.mocked(getAssignments).mockResolvedValue({ data: [] } as any);
+    vi.mocked(getAssignments).mockResolvedValue([]);
     renderWithQuery(<AssignmentsPage />);
     await waitFor(() => expect(screen.getByText("No assignments yet")).toBeInTheDocument());
   });
@@ -108,9 +108,7 @@ describe("AssignmentsPage", () => {
 
   it("shows grade label when available, falling back to value", async () => {
     const user = userEvent.setup();
-    vi.mocked(getGrades).mockResolvedValue({
-      data: [{ ...baseGrade, label: "", value: 72 }],
-    } as any);
+    vi.mocked(getGrades).mockResolvedValue([{ ...baseGrade, label: "", value: 72 }]);
     renderWithQuery(<AssignmentsPage />);
     await waitFor(() => screen.getByText("Math Homework"));
 
@@ -119,9 +117,7 @@ describe("AssignmentsPage", () => {
   });
 
   it("uses red styling for overdue assignments", async () => {
-    vi.mocked(getAssignments).mockResolvedValue({
-      data: [{ ...baseAssignment, is_overdue: true }],
-    } as any);
+    vi.mocked(getAssignments).mockResolvedValue([{ ...baseAssignment, is_overdue: true }]);
     renderWithQuery(<AssignmentsPage />);
     await waitFor(() => screen.getByText("Math Homework"));
 

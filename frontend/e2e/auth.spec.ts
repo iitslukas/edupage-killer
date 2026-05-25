@@ -23,7 +23,7 @@ test.describe("auth", () => {
   });
 
   test("shows error message on failed login", async ({ page }) => {
-    await page.route(/\/auth\/login\//, (route) =>
+    await page.route(/\/api\/auth\/login\//, (route) =>
       route.fulfill({ status: 401, json: { detail: "No active account found" } }),
     );
     await page.goto("/login");
@@ -35,7 +35,7 @@ test.describe("auth", () => {
 
   test("sign in button is disabled while request is in flight", async ({ page }) => {
     // Never-resolving promise simulates a slow network
-    await page.route(/\/auth\/login\//, () => new Promise(() => {}));
+    await page.route(/\/api\/auth\/login\//, () => new Promise(() => {}));
     await page.goto("/login");
     await page.getByLabel("Email").fill("test@school.edu");
     await page.getByLabel("Password").fill("password");
@@ -44,12 +44,12 @@ test.describe("auth", () => {
   });
 
   test("successful login redirects to /dashboard", async ({ page }) => {
-    await page.route(/\/auth\/login\//, (route) =>
+    await page.route(/\/api\/auth\/login\//, (route) =>
       route.fulfill({ json: { access: "test-access", refresh: "test-refresh" } }),
     );
-    await page.route(/\/accounts\/me\//, (route) => route.fulfill({ json: MOCK_USER }));
+    await page.route(/\/api\/accounts\/me\//, (route) => route.fulfill({ json: MOCK_USER }));
     // Silence dashboard data fetches
-    await page.route(/\/(timetable|assignments)\//, (route) => route.fulfill({ json: [] }));
+    await page.route(/\/api\/(timetable|assignments)\//, (route) => route.fulfill({ json: [] }));
 
     await page.goto("/login");
     await page.getByLabel("Email").fill("alice@school.edu");
@@ -60,11 +60,11 @@ test.describe("auth", () => {
   });
 
   test("successful login shows user name in sidebar", async ({ page }) => {
-    await page.route(/\/auth\/login\//, (route) =>
+    await page.route(/\/api\/auth\/login\//, (route) =>
       route.fulfill({ json: { access: "test-access", refresh: "test-refresh" } }),
     );
-    await page.route(/\/accounts\/me\//, (route) => route.fulfill({ json: MOCK_USER }));
-    await page.route(/\/(timetable|assignments)\//, (route) => route.fulfill({ json: [] }));
+    await page.route(/\/api\/accounts\/me\//, (route) => route.fulfill({ json: MOCK_USER }));
+    await page.route(/\/api\/(timetable|assignments)\//, (route) => route.fulfill({ json: [] }));
 
     await page.goto("/login");
     await page.getByLabel("Email").fill("alice@school.edu");

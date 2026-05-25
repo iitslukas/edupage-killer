@@ -4,11 +4,13 @@ import { setupAuth, MOCK_ASSIGNMENT, MOCK_GRADE } from "./fixtures";
 test.describe("assignments", () => {
   test.beforeEach(async ({ page }) => {
     await setupAuth(page);
-    await page.route(/\/assignments\/grades\//, (route) =>
-      route.fulfill({ json: [MOCK_GRADE] }),
-    );
-    await page.route(/\/assignments\//, (route) =>
+    // Register the broader handler first; Playwright tries handlers in reverse
+    // registration order, so the more-specific /grades/ route must be last.
+    await page.route(/\/api\/assignments\//, (route) =>
       route.fulfill({ json: [MOCK_ASSIGNMENT] }),
+    );
+    await page.route(/\/api\/assignments\/grades\//, (route) =>
+      route.fulfill({ json: [MOCK_GRADE] }),
     );
   });
 
@@ -19,14 +21,14 @@ test.describe("assignments", () => {
   });
 
   test("shows empty state when no assignments", async ({ page }) => {
-    await page.route(/\/assignments\//, (route) => route.fulfill({ json: [] }));
+    await page.route(/\/api\/assignments\//, (route) => route.fulfill({ json: [] }));
     await page.goto("/assignments");
     await expect(page.getByText("No assignments yet")).toBeVisible();
   });
 
   test("assignments tab does not fetch grades initially", async ({ page }) => {
     let gradesFetched = false;
-    await page.route(/\/assignments\/grades\//, (route) => {
+    await page.route(/\/api\/assignments\/grades\//, (route) => {
       gradesFetched = true;
       route.fulfill({ json: [MOCK_GRADE] });
     });
@@ -46,7 +48,7 @@ test.describe("assignments", () => {
   });
 
   test("grade label falls back to numeric value when label is empty", async ({ page }) => {
-    await page.route(/\/assignments\/grades\//, (route) =>
+    await page.route(/\/api\/assignments\/grades\//, (route) =>
       route.fulfill({ json: [{ ...MOCK_GRADE, label: "", value: 73 }] }),
     );
     await page.goto("/assignments");
@@ -55,7 +57,7 @@ test.describe("assignments", () => {
   });
 
   test("overdue assignment shows red due-date text", async ({ page }) => {
-    await page.route(/\/assignments\//, (route) =>
+    await page.route(/\/api\/assignments\//, (route) =>
       route.fulfill({ json: [{ ...MOCK_ASSIGNMENT, is_overdue: true }] }),
     );
     await page.goto("/assignments");

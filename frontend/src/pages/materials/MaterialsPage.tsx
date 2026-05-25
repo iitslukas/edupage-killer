@@ -21,8 +21,7 @@ export default function MaterialsPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["materials", filter],
-    queryFn: () =>
-      getMaterials(filter ? { material_type: filter } : {}).then((r) => r.data.results),
+    queryFn: () => getMaterials(filter ? { material_type: filter } : {}),
   });
 
   const deleteMut = useMutation({

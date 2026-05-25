@@ -17,7 +17,7 @@ describe("chat api", () => {
   it("getChannels calls GET /chat/channels/", async () => {
     mock.onGet("/chat/channels/").reply(200, []);
     const res = await getChannels();
-    expect(res.data).toEqual([]);
+    expect(res).toEqual([]);
   });
 
   it("createChannel posts body to /chat/channels/", async () => {

@@ -1,8 +1,8 @@
-import apiClient from "./client";
+import apiClient, { unwrapList, type PaginatedOrList } from "./client";
 import type { Note } from "@/types";
 
-export const getNotes = (params?: Record<string, string>) =>
-  apiClient.get<Note[]>("/notes/", { params });
+export const getNotes = (params?: Record<string, string>): Promise<Note[]> =>
+  apiClient.get<PaginatedOrList<Note>>("/notes/", { params }).then((r) => unwrapList(r.data));
 
 export const getNote = (id: number) => apiClient.get<Note>(`/notes/${id}/`);
 

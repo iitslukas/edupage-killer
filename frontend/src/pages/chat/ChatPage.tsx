@@ -18,14 +18,14 @@ export default function ChatPage() {
 
   const { data: channels } = useQuery({
     queryKey: ["channels"],
-    queryFn: () => getChannels().then((r) => r.data),
+    queryFn: () => getChannels(),
   });
 
   const activeChannelId = channelId ? parseInt(channelId) : channels?.[0]?.id;
 
   const { data: messages } = useQuery({
     queryKey: ["messages", activeChannelId],
-    queryFn: () => (activeChannelId ? getMessages(activeChannelId).then((r) => r.data) : []),
+    queryFn: () => (activeChannelId ? getMessages(activeChannelId) : []),
     enabled: !!activeChannelId,
   });
 

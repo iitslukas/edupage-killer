@@ -11,12 +11,12 @@ export default function AssignmentsPage() {
   const [tab, setTab] = useState<Tab>("assignments");
   const { data: assignments, isLoading: loadingAssignments } = useQuery({
     queryKey: ["assignments"],
-    queryFn: () => getAssignments().then((r) => r.data),
+    queryFn: () => getAssignments(),
   });
 
   const { data: grades, isLoading: loadingGrades } = useQuery({
     queryKey: ["grades"],
-    queryFn: () => getGrades().then((r) => r.data),
+    queryFn: () => getGrades(),
     enabled: tab === "grades",
   });
 

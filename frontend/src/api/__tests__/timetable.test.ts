@@ -17,7 +17,7 @@ describe("timetable api", () => {
   it("getMyTimetable calls GET /timetable/my/", async () => {
     mock.onGet("/timetable/my/").reply(200, []);
     const res = await getMyTimetable();
-    expect(res.data).toEqual([]);
+    expect(res).toEqual([]);
   });
 
   it("getTimetableEntries calls GET /timetable/entries/ with params", async () => {
