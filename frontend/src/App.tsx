@@ -10,6 +10,11 @@ import ChatPage from "@/pages/chat/ChatPage";
 import AssignmentsPage from "@/pages/assignments/AssignmentsPage";
 import NotesPage from "@/pages/notes/NotesPage";
 
+const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true";
+
+// Strip trailing slash so React Router's basename works correctly
+const basename = import.meta.env.BASE_URL.replace(/\/$/, "");
+
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
@@ -17,9 +22,13 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
+        {DEMO_MODE ? (
+          <Route path="/login" element={<Navigate to="/dashboard" replace />} />
+        ) : (
+          <Route path="/login" element={<LoginPage />} />
+        )}
         <Route
           path="/"
           element={

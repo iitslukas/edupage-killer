@@ -1,0 +1,110 @@
+name: PR Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  deploy-preview:
+    name: Deploy PR Preview
+    runs-on: ubuntu-latest
+    if: github.event.action != 'closed'
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Sync MSW service worker
+        run: |
+          mkdir -p public
+          cp node_modules/msw/lib/mockServiceWorker.js public/mockServiceWorker.js
+
+      - name: Build PR preview
+        run: pnpm run build
+        env:
+          VITE_DEMO_MODE: "true"
+          VITE_BASE_PATH: "/${{ github.event.repository.name }}/pr-${{ github.event.number }}/"
+
+      - name: Deploy to gh-pages subdirectory
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: frontend/dist
+          branch: gh-pages
+          target-folder: pr-${{ github.event.number }}
+          clean: true
+
+      - name: Post preview URL comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: pr-preview
+          message: |
+            ## Preview deployment
+
+            | | |
+            |---|---|
+            | **URL** | https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ github.event.number }}/ |
+            | **Commit** | ${{ github.event.pull_request.head.sha }} |
+            | **Updated** | ${{ github.event.pull_request.updated_at }} |
+
+            > Demo mode — sample data, no backend required.
+
+  cleanup-preview:
+    name: Remove PR Preview
+    runs-on: ubuntu-latest
+    if: github.event.action == 'closed'
+
+    steps:
+      - name: Check gh-pages branch exists
+        id: branch-check
+        run: |
+          if git ls-remote --heads \
+               "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" \
+               gh-pages | grep -q gh-pages; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.branch-check.outputs.exists == 'true'
+        with:
+          ref: gh-pages
+          fetch-depth: 1
+
+      - name: Delete preview directory
+        if: steps.branch-check.outputs.exists == 'true'
+        run: |
+          if [ -d "pr-${{ github.event.number }}" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git rm -rf "pr-${{ github.event.number }}"
+            git commit -m "chore: remove preview for PR #${{ github.event.number }}"
+            git push
+          fi
+
+      - name: Update PR comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: pr-preview
+          message: |
+            Preview removed (PR closed).

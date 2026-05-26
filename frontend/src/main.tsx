@@ -26,12 +26,29 @@ const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <ApolloProvider client={apolloClient}>
-      <QueryClientProvider client={queryClient}>
-        <App />
-      </QueryClientProvider>
-    </ApolloProvider>
-  </React.StrictMode>
-);
+async function init() {
+  if (import.meta.env.VITE_DEMO_MODE === "true") {
+    const { worker } = await import("./mocks/browser");
+    await worker.start({
+      onUnhandledRequest: "bypass",
+      serviceWorker: {
+        url: import.meta.env.BASE_URL + "mockServiceWorker.js",
+      },
+    });
+    const { DEMO_USER } = await import("./mocks/data");
+    const { useAuthStore } = await import("./store/auth");
+    useAuthStore.getState().setAuth(DEMO_USER, "demo-access-token", "demo-refresh-token");
+  }
+
+  ReactDOM.createRoot(document.getElementById("root")!).render(
+    <React.StrictMode>
+      <ApolloProvider client={apolloClient}>
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      </ApolloProvider>
+    </React.StrictMode>
+  );
+}
+
+init();
