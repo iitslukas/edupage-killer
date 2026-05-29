@@ -51,13 +51,9 @@ export const handlers = [
   http.get("/api/materials/", () => HttpResponse.json(MATERIALS)),
   http.get("/api/materials/:id/", ({ params }) => {
     const material = MATERIALS.find((m) => m.id === Number(params.id));
-    return material
-      ? HttpResponse.json(material)
-      : new HttpResponse(null, { status: 404 });
+    return material ? HttpResponse.json(material) : new HttpResponse(null, { status: 404 });
   }),
-  http.post("/api/materials/", () =>
-    HttpResponse.json(MATERIALS[0], { status: 201 })
-  ),
+  http.post("/api/materials/", () => HttpResponse.json(MATERIALS[0], { status: 201 })),
   http.delete("/api/materials/:id/", () => new HttpResponse(null, { status: 204 })),
   http.post("/api/materials/:id/comments/", () =>
     HttpResponse.json(
