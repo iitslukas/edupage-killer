@@ -28,9 +28,7 @@ export const handlers = [
   http.post("/api/auth/login/", () =>
     HttpResponse.json({ access: "demo-access-token", refresh: "demo-refresh-token" })
   ),
-  http.post("/api/auth/token/refresh/", () =>
-    HttpResponse.json({ access: "demo-access-token" })
-  ),
+  http.post("/api/auth/token/refresh/", () => HttpResponse.json({ access: "demo-access-token" })),
 
   // Accounts
   http.get("/api/accounts/me/", () => HttpResponse.json(DEMO_USER)),
