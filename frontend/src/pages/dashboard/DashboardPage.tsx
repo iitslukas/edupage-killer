@@ -58,8 +58,8 @@ export default function DashboardPage() {
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Today's schedule */}
         <div className="card">
-          <h2 className="font-semibold mb-4 flex items-center gap-2">
-            <Calendar size={16} className="text-blue-500" />
+          <h2 className="font-medium text-sm mb-4 flex items-center gap-2 text-gray-700">
+            <Calendar size={15} className="text-gray-400" />
             Today's Schedule
           </h2>
           {todayEntries.length === 0 ? (
@@ -88,8 +88,8 @@ export default function DashboardPage() {
 
         {/* Upcoming assignments */}
         <div className="card">
-          <h2 className="font-semibold mb-4 flex items-center gap-2">
-            <BookOpen size={16} className="text-orange-500" />
+          <h2 className="font-medium text-sm mb-4 flex items-center gap-2 text-gray-700">
+            <BookOpen size={15} className="text-gray-400" />
             Upcoming Assignments
           </h2>
           {upcomingAssignments.length === 0 ? (
@@ -137,27 +137,18 @@ function StatCard({
   icon: Icon,
   label,
   value,
-  color,
 }: {
   icon: React.ElementType;
   label: string;
   value: string;
   color: string;
 }) {
-  const colors: Record<string, string> = {
-    blue: "bg-blue-50 text-blue-600",
-    orange: "bg-orange-50 text-orange-600",
-    green: "bg-green-50 text-green-600",
-    purple: "bg-purple-50 text-purple-600",
-  };
   return (
-    <div className="card flex items-center gap-4">
-      <div className={`p-3 rounded-xl ${colors[color]}`}>
-        <Icon size={20} />
-      </div>
+    <div className="card flex items-center gap-3">
+      <Icon size={18} className="text-gray-400 flex-shrink-0" />
       <div>
-        <p className="text-2xl font-bold">{value}</p>
-        <p className="text-xs text-gray-500">{label}</p>
+        <p className="text-xl font-semibold">{value}</p>
+        <p className="text-xs text-gray-400">{label}</p>
       </div>
     </div>
   );
