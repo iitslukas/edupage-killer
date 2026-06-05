@@ -25,10 +25,9 @@ export default function Sidebar() {
   const user = useAuthStore((s) => s.user);
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
-      <div className="p-6 border-b border-gray-200">
-        <h1 className="text-xl font-bold text-blue-600">EduPageKiller</h1>
-        <p className="text-xs text-gray-500 mt-0.5">School Management</p>
+    <aside className="w-56 bg-white border-r border-gray-100 flex flex-col">
+      <div className="p-5 border-b border-gray-100">
+        <h1 className="text-base font-semibold text-gray-900">EduPageKiller</h1>
       </div>
 
       <nav className="flex-1 py-4 overflow-y-auto">
@@ -51,14 +50,14 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">
+      <div className="p-3 border-t border-gray-100">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-xs font-medium">
             {user?.full_name?.charAt(0) ?? "?"}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate">{user?.full_name}</p>
-            <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+            <p className="text-xs text-gray-400 capitalize">{user?.role}</p>
           </div>
         </div>
       </div>
