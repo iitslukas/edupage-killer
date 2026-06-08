@@ -6,7 +6,6 @@ RUN npm install -g corepack@latest && corepack enable && corepack prepare pnpm@9
 
 COPY package.json pnpm-lock.yaml* ./
 RUN pnpm install --frozen-lockfile
-ENV VITE_DEMO_MODE true
 
 COPY . .
 
